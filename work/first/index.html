@@ -70,15 +70,76 @@
 <script src="../../common/js/jquery.js"></script>
 <script>
 // 第1問  id='q1'の要素の文字色を赤色にせよ。
+// jQuery(document).ready(function () {　→ $(function () {
+// jQuery(セレクタ).メソッド(引数)→jQueryを$に置き換えが可能 $(セレクタ).メソッド(引数)
+$(function() {
+  $('#q1').css({
+    'color':'#FF0000'
+  });
+
 // 第2問  id='q2'の要素をクリックしたら背景色をピンクにせよ。
+// 指定するDOMが直前に指定されているものと同じ場合はthisで指定可能。
+// cssメソッドを利用しプロパティを変更する。
+  $('#q2').click(function() {
+    $(this).css({'background-color':'pink'});
+  })
 // 第3問  id='q3'の要素をクリックしたら2秒かけてフェードアウトさせよ。
+  $('#q3').click(function() {
+    $(this).fadeOut(2000);
+  });
 // 第4問  id='q4'の要素をクリックしたらこの要素の前後とこの要素内の前後にテキストを挿入せよ。
+// 指定の要素の前に追加...before 指定の要素の後に追加...after  指定の要素の子要素の先頭に追加...prepend
+// 指定の要素の子要素の最後に追加...append
+  $('#q4').click(function() {
+    $(this).prepend("DOMの中の前")
+            .append("DOMの中の後")
+            .before("DOMの前")
+            .after("DOMの後");
+  });
 // 第5問  id='q5'の要素をクリックしたらこの要素にlargeというクラスを付与せよ。
+// addClass()では引数のクラスに.をつけないので注意
+  $('#q5').click(function() {
+    $(this).addClass('large');
+  });
 // 第6問  id='q6'の要素をクリックしたらこの要素を2秒かけてmargin-topとmargin-leftを100pxの位置に移動させよ。
+// animateメソッドはcssのプロパティを一定時間かけて変更するメソッドである。
+  $('#q6').click(function() {
+    $(this).animate({
+        'marginTop':'100px',
+        'marginLeft':'100px'
+    }, 2000);
+  });
 // 第7問  id='q7'の子要素をクリックしたら、その要素のインデックス（何番目か）をconsole.log()とalert()を用いて表示させよ。
+// find()　findメソッドは指定されたDOM要素から引数に渡された要素を取ってくるメソッドです。
+// index()　はその要素が何番目の要素か教えてくれるメソッドである。
+  $('#q7').find('li').click(function() {
+    var targetNum = $(this).index();
+    console.log(targetNum);
+    alert(targetNum);
+  });
 // 第8問  id='q8'の要素をhoverしたらlargeというクラスを付与し、hoverが外れたら、クラスを削除せよ。
+// hover(関数, 関数)の場合はhoverした後に第一引数の関数がhoverした時に実行され、hoverが離れた時に第二引数を実行する。
+  $('#q8').hover(function() {
+    $('#q8').addClass('large');
+  },　function() {
+    $('#q8').removeClass('large');
+  });
 // 第9問  id='q9'の要素をクリックしたらこの要素に設定してあるdata属性をconsoleに表示せよ。
+// data() その要素のdata属性を取得もしくはセットするメソッド。
+// data( , )でセットする。
+  $('#q9').click(function() {
+    var text = $(this).data('text');
+    console.log(text);
+  });
 // 第10問 id='q10'の子要素をクリックしたら、その要素のインデックスと等しいid='q11'の子要素にlargeというクラスを追加せよ。
+// find()　findメソッドは指定されたDOM要素から引数に渡された要素を取ってくるメソッドです。
+// index()　はその要素が何番目の要素か教えてくれるメソッドである。
+// .eq() DOM要素の引数の値に等しい番号のDOMを指定する。
+  $('#q10').find('li').click(function() {
+    var num = $(this).index();
+    $('#q11').find('li').eq(num).addClass('large');
+  });
+});
 </script>
 </body>
 </html>
