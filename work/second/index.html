@@ -1,4 +1,4 @@
-<!doctype html>
+　　<!doctype html>
 <html>
   <head>
     <meta charset="UTF-8">
@@ -27,6 +27,43 @@
       // .click() クリック時のイベントを登録する。
       // .fadeIn() 一定時間かけてフェードインする。
       // .fadeOut() 一定時間かけてフェードアウトする。
+
+      // modal-showのセレクタをクリックした時以下の関数が発動する。
+      // clickメソッドの引数にclickした後の動作を引数に入れる。隠れていたmodalセレクタが一定時間で現れるようにする。
+      // その後、modal-closeセレクタをクリックした時にmodalが一定時間で隠れるようにする。
+      $(function(){
+        $('.modal-show').click(function(){
+          $('.modal').fadeIn(500);
+        }),
+        $('.modal-close').click(function(){
+          $('.modal').fadeOut(500);
+        });
+      });
+
+      // function Modal() {
+      //   this.$modal = $('.modal');
+      //   this.$modalShow = $('.modal-show');
+      //   this.$modalClose = $('.modal-close');
+      //   this.ANIMATE_TIME = 500;
+      //   this.bind();
+      // }
+
+      // Modal.prototype.bind = function() {
+      //   this.$modalShow.on('click', this.show.bind(this));
+      //   this.$modalClose.on('click', this.hide.bind(this));
+      // };
+
+      // Modal.prototype.show = function() {
+      //   this.$modal.fadeIn(this.ANIMATE_TIME);
+      // };
+
+      // Modal.prototype.hide = function() {
+      //   this.$modal.fadeOut(this.ANIMATE_TIME);
+      // };
+
+      // $(function(){
+      //   var modal = new Modal();
+      // });
     </script>
   </body>
 </html>
