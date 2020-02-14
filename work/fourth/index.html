@@ -56,6 +56,37 @@
       // .next() 要素の隣の要素を取得します。これは使わなくてもできます。
       // .children() 要素の子要素を取得します。
       // .stop() 現在動作中のアニメーション処理を全て中止します。
+
+      // hover()メソッドを利用し、触れた時に.menu__list__childListの子要素がスライドダウンし、離れた時に.menu__list__childListの子要素がスライドアップするようにする。
+      // hover()メソッドが第一関数、第二関数を取るようにし、第一関数にスライドダウンの関数を記述し、第二関数にスライドアップの関数を記述する。
+      // .menu__list__childListの内容をhoverした時に表示したいので、$(this).next('.menu__list__childList')を利用する。これで.menu__list__titleの次にある要素
+      // .menu__list__childListを取得する。マウスが瞬時に離れたり触れたりした時にアニメーションを中止する処理が必要なのでstop()メソッドが必要。
+      // $(function(){
+      //   $('.menu__list__title').hover(function(){
+      //     $(this).next('.menu__list__childList').stop().slideDown();
+      //   },function(){
+      //     $(this).next('.menu__list__childList').stop().slideUp();
+      //   });
+      // });
+
+      // $(function(){
+      //   $('.menu__list > li').hover(function(){
+      //     $(this).children().next().stop().slideDown();
+      //   },function(){
+      //     $(this).children().next().stop().slideUp();
+      //   });
+      // });
+
+      $(function(){
+        //  >は直下のみ
+        // 前のアニメーションを止める。
+        $('.menu__list > li').hover(function(){
+          $(this).children('ul').stop().slideDown();
+        },function(){
+          $(this).children('ul').stop().slideUp();
+        });
+      });
+      // slideDownメソッドは隠れている要素がある時に使える。
     </script>
   </body>
 </html>

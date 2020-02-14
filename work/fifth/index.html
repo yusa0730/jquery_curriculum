@@ -97,6 +97,42 @@
       // .data('') DOM要素にあるdata-~を取得できる
       // .change() セレクトボックスの値の変更をキャッチする関数
       // $().each() DOM要素を1つずつループ処理をする（ループ内で$(this)を使うと要素がひとつずつ取得できる）
+
+
+      // selectボタンが動いた時の流れをchange()メソッドの関数に設定する。
+      // selectボタンのvalueを取得するためにval()メソッドを利用し値を取得し、val変数に代入する。
+      // valが"all"の場合は全てのliを表示する。それぞれのliを表示するためにlinoかたまりを分解するeach()メソッドを利用する。
+      // 分解したそれぞれの'ul.list li'の要素をshow()で表示している。
+      // valが'all'でない場合は'ul.list li'をeach()メソッドで分解し、'ul.list li'のdataの
+      // http://dqn.sakusakutto.jp/2012/05/jquery_each_call.html
+      $(function() {
+        $('.select').change(function(){
+          var val = $(this).val();
+          // allの場合はeachが必要ない。
+          if (val === "all") {
+            $('ul.list li').show();
+          } else {
+            // eachメソッドの引数を使って処理する。
+            // $('ul.list li').each(function(){
+            //   if ($(this).data("category-type") === val) {
+            //     $(this).show();
+            //   }else{
+            //     $(this).hide();
+            //   }
+            // });
+
+            $('ul.list li').each(function(index, element){
+              console.log(element);
+              console.log(index);
+              if ($(element).data("category-type") === val) {
+                $(element).show();
+              }else{
+                $(element).hide();
+              }
+            });
+          }
+        });
+      });
     </script>
   </body>
 </html>

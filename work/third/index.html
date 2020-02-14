@@ -30,6 +30,44 @@
       // .eq() 引数に応じたindexの要素を指定します。
       // .addClass() クラスを追加します。
       // .removeClass() クラスを削除します。
+
+    // function Item() {
+    //   this.$navItem = $('.nav').find('li');
+    //   this.$contentItem = $('.contents').find('li');
+    //   this.bind();
+    // }
+
+
+
+    // Item.prototype.bind = function() {
+    //   this.$navItem.on('click', this.show.bind(this));
+    // };
+
+    // Modal.prototype.
+
+    // $(function() {
+    //   var item = new Item();
+    // });
+
+    // navセレクタの子要素を全て取得し、$navItemという変数に代入する。
+    // 同じくcontentsセレクタの子要素を全て取得し、$contentsItemという変数に代入する。
+    // $navItem(navセレクタの子要素)をクリックした時に以下の関数が発動するようにする。
+    // $(this)=$('.nav').find('li')=$navItemの要素の番号をindex()メソッドで取得し、indexという変数に代入する。
+    // $navItemの要素の番号と同じものを取得できるようにeq(index)を利用し、同じ要素の番号の$contentsItemが現れ、異なる要素の番号の$contentsItemが隠れるように
+    // addClass(),removeClass(),eq()をメソッドチェーンで結ぶ。
+    $(function() {
+        var $navItem = $('.nav').find('li');
+        var $contentsItem = $('.contents').find('li');
+
+        $navItem.click(function() {
+            var index = $(this).index();
+            $contentsItem
+                // メソッドチェーンは上から処理される。
+                .addClass('is-hidden')
+                .eq(index)
+                .removeClass('is-hidden');
+        });
+    });
     </script>
   </body>
 </html>
