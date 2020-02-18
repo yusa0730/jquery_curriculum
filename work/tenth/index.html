@@ -76,16 +76,20 @@
 
       $(function(){
         // 変数の初期化　宣言をしただけで中身は何もない状態です。
-          var old_text;
+          var oldText;
           var pageNo;
           $('.search__btn').click(function(){
+            searchBook();
+          });
+
+          function searchBook() {
             // 検索キーワードが変化した時の値をsearch__textという変数に代入
-            var search__text = $('.search__text__input').val();
+            var searchText = $('.search__text__input').val();
             // 2回目以降に検索した時の分岐。前回の検索キーワードと今回の検索キーワードを比較。
             // 前回と今回のキーワードが違う場合はページに残っているデータを空にする。
             // 新しい検索キーワードによる検索が行われた時にpageの数値を１ページ目にする
             // else以下は同じキーワードで検索された時に次のページ番号にしている。pageのデータをajaxのpage区分に設定
-            if (old_text !== search__text) {
+            if (oldText !== searchText) {
               $('ul').empty();
               pageNo = 1;
               // console.log("testtest");
@@ -93,11 +97,12 @@
               pageNo++;
             }
             // 今回の検索キーワードを次回の検索が行われた時の比較対象として使うためにold_textに代入。
-            old_text = search__text;
-            ajax(search__text, pageNo);
-          });
+            oldText = searchText;
+            bookSearchAjax(searchText, pageNo);
+          }
 
-          function ajax(search__text, pageNo) {
+
+          function bookSearchAjax(searchText, pageNo) {
             $.ajax({
                   url: 'https://app.rakuten.co.jp/services/api/BooksTotal/Search/20130522',
                   type: 'GET',
@@ -105,73 +110,73 @@
                   data: {
                     applicationId: '1019399324990976605',
                     booksGenreId: '001',
-                    keyword: search__text,
+                    keyword: searchText,
                     hits:'20',
                     page:pageNo
                   },
-            }).done(function(data) {
-              success(data);
-            }).fail(function(data){
-              error(data, search__text);
+            }).done(function(successData) {
+              bookSearchSuccess(successData);
+            }).fail(function(errorData){
+              bookSearchError(errorData, searchText);
             })
           }
 
-        function success(data) {
-          if (data.count > 0) {
-            // この中にデータ取得後の動きを記述していきます。
-            var rItems = data.Items;
-            var list = '';
-            $.each(rItems, function(index, Item){
-              list +=
-                "<li class='lists__item'>" +
-                  "<div class='lists__item__inner'>" +
-                    "<a href='" + Item.Item.itemUrl + " 'class='lists__item__link' target='_blank'>" +
-                      "<img src='" + Item.Item.mediumImageUrl +"' class='lists__item__img' alt>" +
-                      "<p class='lists__item__detail'>作品名：　" + Item.Item.title+ '</p>' +
-                      "<p class='lists__item__detail'>作者　：　" + Item.Item.author+ '</p>' +
-                      "<p class='lists__item__detail'>出版社：　" + Item.Item.publisherName+ '</p>' +
-                    '</a>' +
-                  '</div>' +
-                '</li>'
-            })
-            // すでに検索結果が見つかりませんでした。別のキーワードで検索して下さい。」の表示が出ている場合は消す。。
+          function bookSearchSuccess(successData) {
+            if (successData.count > 0) {
+              // この中にデータ取得後の動きを記述していきます。
+              var rItems = successData.Items;
+              var list = '';
+              $.each(rItems, function(index, Item){
+                list +=
+                  "<li class='lists__item'>" +
+                    "<div class='lists__item__inner'>" +
+                      "<a href='" + Item.Item.itemUrl + " 'class='lists__item__link' target='_blank'>" +
+                        "<img src='" + Item.Item.mediumImageUrl +"' class='lists__item__img' alt>" +
+                        "<p class='lists__item__detail'>作品名：　" + Item.Item.title + '</p>' +
+                        "<p class='lists__item__detail'>作者　：　" + Item.Item.author+ '</p>' +
+                        "<p class='lists__item__detail'>出版社：　" + Item.Item.publisherName+ '</p>' +
+                      '</a>' +
+                    '</div>' +
+                  '</li>'
+              })
+              // すでに検索結果が見つかりませんでした。別のキーワードで検索して下さい。」の表示が出ている場合は消す。
+              displayNone();
+              // 同じ単語で検索された時に新しいページものが一番上に来るようにする。
+              $('.lists').prepend(list);
+            } else if (successData.count == 0){
+              // $('.lists').text('検索結果が見つかりませんでした。別のキーワードで検索して下さい。').css('text-align','center');
+              $('.message').css('display','block');
+            }
+          }
+
+          function bookSearchError(errorData, searchText) {
             displayNone();
-            // 同じ単語で検索された時に新しいページものが一番上に来るようにする。
-            $('.lists').prepend(list);
-          } else if (data.count == 0){
-            // $('.lists').text('検索結果が見つかりませんでした。別のキーワードで検索して下さい。').css('text-align','center');
-            $('.message').css('display','block');
+            var disconnect = "データ通信できませんでした。接続を確認してください。";
+            var correctKeyword = "正しい検索キーワードを入力して下さい。";
+            var inputKeyword = "検索キーワードを入力して下さい。";
+            var notRepeatKeyword = "検索ボタンを連打しないでください。";
+            var unexpecetdError = "予想外のエラーが起きました。";
+
+            if (errorData.readyState === 0) {
+               showText(disconnect);
+            } else if (searchText.length === 0) {
+               showText(inputKeyword);
+            } else if (errorData.status === 400) {
+               showText(correctKeyword);
+            } else if (errorData.status === 429) {
+               showText(notRepeatKeyword);
+            } else {
+               showText(unexpecetdError);
+            }
           }
-        }
 
-        function error(data, search__text) {
-          displayNone();
-          var disconnect = "データ通信できませんでした。接続を確認してください。";
-          var correct_keyword = "正しい検索キーワードを入力して下さい。";
-          var input_keyword = "検索キーワードを入力して下さい。";
-          var not_repeat_keyword = "検索ボタンを連打しないでください。";
-          var unexpecetd_error = "予想外のエラーが起きました。";
-
-          if (data.readyState === 0) {
-             show_text(disconnect);
-          } else if (search__text.length === 0) {
-             show_text(input_keyword);
-          } else if (data.status === 400) {
-             show_text(correct_keyword);
-          } else if (data.status === 429) {
-             show_text(not_repeat_keyword);
-          } else {
-             show_text(unexpecetd_error);
+          function showText(errorType) {
+            $('.lists').text(errorType).css('text-align','center');
           }
-        }
 
-        function show_text(error_type) {
-          $('.lists').text(error_type).css('text-align','center');
-        }
-
-        function displayNone(){
-          $('.message').css('display','none');
-        }
+          function displayNone(){
+            $('.message').css('display','none');
+          }
       });
     </script>
   </body>
