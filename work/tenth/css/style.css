@@ -24,6 +24,11 @@
   background: #fff;
   box-shadow: 0 1px 5px #ccc;
 }
+.message {
+  display: none;
+  margin-bottom: 50px;
+  text-align: center;
+}
 .search__text {
   width: 100%;
 }
