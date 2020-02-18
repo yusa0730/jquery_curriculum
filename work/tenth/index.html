@@ -73,109 +73,106 @@
       //
       //
       //
-      // var paramKey = 'js-search-word';
-
-
 
       $(function(){
-        // 変数の初期化
+        // 変数の初期化　宣言をしただけで中身は何もない状態です。
           var old_text;
           var pageNo;
           $('.search__btn').click(function(){
             // 検索キーワードが変化した時の値をsearch__textという変数に代入
             var search__text = $('.search__text__input').val();
-            // console.log("前回："+old_text);
-            // console.log("今回："+search__text);
-
             // 2回目以降に検索した時の分岐。前回の検索キーワードと今回の検索キーワードを比較。
             // 前回と今回のキーワードが違う場合はページに残っているデータを空にする。
-            // 新しい検索キーワードによる検索が行われた時にpageの数値を初期化する
+            // 新しい検索キーワードによる検索が行われた時にpageの数値を１ページ目にする
             // else以下は同じキーワードで検索された時に次のページ番号にしている。pageのデータをajaxのpage区分に設定
             if (old_text !== search__text) {
               $('ul').empty();
               pageNo = 1;
               // console.log("testtest");
-            }else{
+            } else {
               pageNo++;
             }
             // 今回の検索キーワードを次回の検索が行われた時の比較対象として使うためにold_textに代入。
             old_text = search__text;
-
-            $.ajax({
-              url: 'https://app.rakuten.co.jp/services/api/BooksTotal/Search/20130522',
-              type: 'GET',
-              datatype: 'json',
-              data: {
-              // 「区分:サービス固有パラメーター」を確認して、必要な情報をdata内に入れましょう。
-                applicationId: '1019399324990976605', // (今回はこのIDを使用してください) ※IDは他サイト等には絶対に転載しないでください
-                booksGenreId: '001',
-                keyword: search__text,
-                hits:'20',
-                page:pageNo
-              },
-              // error : function(XMLHttpRequest, textStatus, errorThrown) {
-              //     console.log("ajax通信に失敗しました");
-              //     console.log("XMLHttpRequest : " + XMLHttpRequest.status);
-              //     console.log("textStatus     : " + textStatus);
-              //     console.log("errorThrown    : " + errorThrown.message);
-              // },
-            }).done(function(data) {
-              console.log(data)
-              if (data.count > 0) {
-                // この中にデータ取得後の動きを記述していきます。
-                var rItems = data.Items;
-                var list = '';
-                // console.log(rItems);
-                $.each(rItems, function(index, Item){
-                  console.log(Item);
-                  list +=
-                    "<li class='lists__item'>" +
-                      "<div class='lists__item__inner'>" +
-                        "<a href='" + Item.Item.itemUrl + " 'class='lists__item__link' target='_blank'>" +
-                          "<img src='" + Item.Item.mediumImageUrl +"' class='lists__item__img' alt>" +
-                          "<p class='lists__item__detail'>作品名：　" + Item.Item.title+ '</p>' +
-                          "<p class='lists__item__detail'>作者　：　" + Item.Item.author+ '</p>' +
-                          "<p class='lists__item__detail'>出版社：　" + Item.Item.publisherName+ '</p>' +
-                        '</a>' +
-                      '</div>' +
-                    '</li>'
-                })
-                // appendで下に追加
-                // $('.message').css('display','none');
-                // すでに検索結果が見つかりませんでした。別のキーワードで検索して下さい。」の表示が出ている場合は消す。。
-                displayNone();
-                // 同じ単語で検索された時に新しいページものが一番上に来るようにする。
-                $('.lists').prepend(list);
-              }else if(data.count == 0){
-                // $('.lists').text('検索結果が見つかりませんでした。別のキーワードで検索して下さい。').css('text-align','center');
-                $('.message').css('display','block');
-                // $('').prepend("検索結果が見つかりませんでした。別のキーワードで検索して下さい。").css('text-align','center');
-                // $('.lists').prepend(list);
-              }
-            }).fail(function (data) {
-              // $('.message').css('display','none');
-              displayNone();
-              if (data.readyState === 0) {
-                $('.lists').text('データ通信できませんでした。接続を確認してください。').css('text-align','center');
-              }else if (search__text.length === 0) {
-                // console.log(search__text.length);
-                $('.lists').text('検索キーワードを入力して下さい。').css('text-align','center');
-              }else if(data.status === 400) {
-                // console.log(search__text.length);
-                $('.lists').text('正しい検索キーワードを入力して下さい。').css('text-align','center');
-              }else if(data.status === 429) {
-                $('.lists').text('検索ボタンを連打しないでください。').css('text-align','center');
-              }
-              // console.log(data);
-              // // console.log(error);
-              // console.log(data.readyState);
-            });
+            ajax(search__text, pageNo);
           });
+
+          function ajax(search__text, pageNo) {
+            $.ajax({
+                  url: 'https://app.rakuten.co.jp/services/api/BooksTotal/Search/20130522',
+                  type: 'GET',
+                  datatype: 'json',
+                  data: {
+                    applicationId: '1019399324990976605',
+                    booksGenreId: '001',
+                    keyword: search__text,
+                    hits:'20',
+                    page:pageNo
+                  },
+            }).done(function(data) {
+              success(data);
+            }).fail(function(data){
+              error(data, search__text);
+            })
+          }
+
+        function success(data) {
+          if (data.count > 0) {
+            // この中にデータ取得後の動きを記述していきます。
+            var rItems = data.Items;
+            var list = '';
+            $.each(rItems, function(index, Item){
+              list +=
+                "<li class='lists__item'>" +
+                  "<div class='lists__item__inner'>" +
+                    "<a href='" + Item.Item.itemUrl + " 'class='lists__item__link' target='_blank'>" +
+                      "<img src='" + Item.Item.mediumImageUrl +"' class='lists__item__img' alt>" +
+                      "<p class='lists__item__detail'>作品名：　" + Item.Item.title+ '</p>' +
+                      "<p class='lists__item__detail'>作者　：　" + Item.Item.author+ '</p>' +
+                      "<p class='lists__item__detail'>出版社：　" + Item.Item.publisherName+ '</p>' +
+                    '</a>' +
+                  '</div>' +
+                '</li>'
+            })
+            // すでに検索結果が見つかりませんでした。別のキーワードで検索して下さい。」の表示が出ている場合は消す。。
+            displayNone();
+            // 同じ単語で検索された時に新しいページものが一番上に来るようにする。
+            $('.lists').prepend(list);
+          } else if (data.count == 0){
+            // $('.lists').text('検索結果が見つかりませんでした。別のキーワードで検索して下さい。').css('text-align','center');
+            $('.message').css('display','block');
+          }
+        }
+
+        function error(data, search__text) {
+          displayNone();
+          var disconnect = "データ通信できませんでした。接続を確認してください。";
+          var correct_keyword = "正しい検索キーワードを入力して下さい。";
+          var input_keyword = "検索キーワードを入力して下さい。";
+          var not_repeat_keyword = "検索ボタンを連打しないでください。";
+          var unexpecetd_error = "予想外のエラーが起きました。";
+
+          if (data.readyState === 0) {
+             show_text(disconnect);
+          } else if (search__text.length === 0) {
+             show_text(input_keyword);
+          } else if (data.status === 400) {
+             show_text(correct_keyword);
+          } else if (data.status === 429) {
+             show_text(not_repeat_keyword);
+          } else {
+             show_text(unexpecetd_error);
+          }
+        }
+
+        function show_text(error_type) {
+          $('.lists').text(error_type).css('text-align','center');
+        }
+
+        function displayNone(){
+          $('.message').css('display','none');
+        }
       });
-      // 「検索結果が見つかりませんでした。別のキーワードで検索して下さい。」の表示を消す関数。
-      var displayNone =function(){
-        $('.message').css('display','none');
-      }
     </script>
   </body>
 </html>
